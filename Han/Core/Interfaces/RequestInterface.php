@@ -1,9 +1,8 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Андрей
+ * IDE: PhpStorm.
+ * License: The MIT License (MIT) - Copyright (c) 2016 YummyLayers
  * Date: 08.01.2016
- * Time: 21:47
  */
 
 namespace Han\Core\Interfaces;

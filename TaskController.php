@@ -1,11 +1,10 @@
 <?php
-
 /**
- * Created by PhpStorm.
- * User: -m-ousy--
- * Date: 10.01.2016
- * Time: 19:43
+ * IDE: PhpStorm.
+ * License: The MIT License (MIT) - Copyright (c) 2016 YummyLayers
+ * Date: 08.01.2016
  */
+
 class TaskController {
 
     function indexAction(){

@@ -1,10 +1,10 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: ivan-
- * Date: 07.01.2016
- * Time: 22:23
+ * IDE: PhpStorm.
+ * License: The MIT License (MIT) - Copyright (c) 2016 YummyLayers
+ * Date: 08.01.2016
  */
+
 include( "Han/autoload.php" );
 
 use Han\Core\Routing\DomainRouter;

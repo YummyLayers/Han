@@ -1,10 +1,8 @@
 <?php
-
 /**
- * Created by PhpStorm.
- * User: -m-ousy--
+ * IDE: PhpStorm.
+ * License: The MIT License (MIT) - Copyright (c) 2016 YummyLayers
  * Date: 08.01.2016
- * Time: 19:22
  */
 
 namespace Han\Core\Routing;
