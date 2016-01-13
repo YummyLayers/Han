@@ -12,11 +12,13 @@ class TaskController {
     }
 
     function createAction(){
-
+        echo "createAction";
     }
     //task/edit/id/qwe/asd
-    function editAction($id, $qwe, $asd){
+    function editAction(){
 
+
+        echo "editAction";
     }
 
 }

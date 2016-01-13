@@ -8,6 +8,6 @@
 class AuthMiddleware implements \Han\Core\Interfaces\MiddlewareInterface {
 
     public function check() {
-        return TRUE;
+        return true;
     }
 }

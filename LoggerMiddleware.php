@@ -13,6 +13,6 @@ class LoggerMiddleware implements MiddlewareInterface {
 
         // write
 
-        return TRUE;
+        return true;
     }
 }
