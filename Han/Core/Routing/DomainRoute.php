@@ -50,18 +50,21 @@ class DomainRoute {
 
     public function run(){
 
-        $middlewareNext = true;
+        if($this->isEqual){
 
-        foreach ($this->middlewareNames as $middlewareName) {
-            $middleware = new $middlewareName();
-            if ($middleware instanceof MiddlewareInterface) {
-                $middlewareNext = $middleware->check();
+            $middlewareNext = true;
+
+            if($this->middlewareNames) foreach($this->middlewareNames as $middlewareName){
+                $middleware = new $middlewareName();
+                if($middleware instanceof MiddlewareInterface){
+                    $middlewareNext = $middleware->check();
+                }
             }
-        }
 
-        if ($middlewareNext) {
-            $callback = $this->callback;
-            $callback();
+            if($middlewareNext){
+                $callback = $this->callback;
+                $callback();
+            }
         }
     }
 

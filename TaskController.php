@@ -16,9 +16,11 @@ class TaskController {
     }
     //task/edit/id/qwe/asd
     function editAction(){
-
-
         echo "editAction";
+    }
+
+    function edit($id){
+        echo "edit ! " . $id;
     }
 
 }
