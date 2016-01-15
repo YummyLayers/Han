@@ -15,7 +15,13 @@ use Han\Core\Request;
 
 class PathRoute {
 
-    private $isEqual = false;
+    private $valid = false;
+    private $pathArr;
+    private $pattern;
+    private $patternArr;
+    private $isController = false;
+    private $controllerArgs = array();
+    private $methodNamePosition = false;
 
     private $middlewareNames;
     private $arguments;
@@ -25,47 +31,61 @@ class PathRoute {
     private $methodName;
 
     public function __construct($pattern){
+
+        $this->pattern = $pattern;
+
         if($pattern == '/' && empty(Request::getPath())){
 
-            $this->isEqual = true;
+            $this->valid = true;
 
         } else {
 
-            $patternValid = false;
-            $pathArr = Request::getPathArr();
-            $patternArr = explode('/', $pattern);
+            $pathValid = false;
+            $this->pathArr = Request::getPathArr();
+            $this->patternArr = explode('/', $pattern);
             $argumentsArr = array();
 
-            if(count($pathArr) == count($patternArr)){
+            if(count($this->pathArr) == count($this->patternArr)){
 
-                foreach($pathArr as $key => $pathPart){
+                foreach($this->pathArr as $key => $pathPart){
 
-                    if(substr($patternArr[ $key ], 0, 1) == '{' && substr($patternArr[ $key ], -1) == '}'){
+                    if(substr($this->patternArr[ $key ], 0, 1) == '{' && substr($this->patternArr[ $key ], -1) == '}'){
 
                         if($pathPart){
                             $argumentsArr[] = $pathPart;
-                            $patternValid = true;
+                            $pathValid = true;
                         }
                     } else {
 
-                        if($pathPart == $patternArr[ $key ]){
-                            $patternValid = true;
+                        if($pathPart == $this->patternArr[ $key ]){
+                            $pathValid = true;
                         } else {
-                            $patternValid = false;
+                            $pathValid = false;
                             break;
                         }
                     }
                 }
+                // task/edit/3/wer/2 == task
+            } elseif(count($this->pathArr) > count($this->patternArr)) {
+
+                foreach($this->patternArr as $key => $patternPart){
+                    if($patternPart == $this->pathArr[ $key ]){
+                        $pathValid = true;
+                    } else {
+                        $pathValid = false;
+                        break;
+                    }
+                }
+                if($pathValid){
+                    $this->methodNamePosition = count($this->patternArr);
+                    $this->isController = true;
+                }
             }
 
-            $this->isEqual = $patternValid;
+            $this->valid = $pathValid;
 
             $this->arguments = $argumentsArr;
         }
-    }
-
-    public function equal(){
-        return $this->isEqual;
     }
 
     public function setCallback($callback){
@@ -108,13 +128,17 @@ class PathRoute {
         return $this;
     }
 
-    public function run(){
+    public function isValid(){
+        return $this->valid;
+    }
 
-        if($this->isEqual){
+    private function run(){
+
+        if($this->valid){
 
             $middlewareNext = true;
 
-            if(!$this->middlewareNames) foreach($this->middlewareNames as $middlewareName){
+            if(is_array($this->middlewareNames)) foreach($this->middlewareNames as $middlewareName){
                 $middleware = new $middlewareName();
                 if($middleware instanceof MiddlewareInterface){
                     $middlewareNext = $middleware->check();
@@ -123,25 +147,48 @@ class PathRoute {
 
             if($middlewareNext){
 
-                if($this->callback){
-                    $callback = $this->callback;
+                if($this->isController){
 
-                    if($this->arguments) $callback(...$this->arguments);
-                    //call_user_func_array($callback, $this->arguments);
-                    else $callback();
-                }
-                if($this->controllerName){
-                    if($this->methodName){
-                        $controllerName = $this->controllerName;
-                        $controller = new $controllerName();
-                        $methodName = $this->methodName;
-                        //call_user_func_array(array($controller, $this->methodName), $this->arguments);
-                        $controller->$methodName(...$this->arguments);
-                    } else {
+                    if($this->controllerName){
 
+                        if(count($this->pathArr) > count($this->patternArr) + 1){
+                            $this->controllerArgs = array_slice($this->pathArr, $this->methodNamePosition + 1);
+                        } else {
+                            $this->controllerArgs = null;
+                        }
+
+                        $this->callMethod(
+                            $this->controllerName,
+                            Request::getPathArr()[ $this->methodNamePosition ] . 'Action',
+                            $this->controllerArgs
+                        );
+                    }
+
+                } else {
+
+                    if($this->callback){
+                        $callback = $this->callback;
+
+                        if($this->arguments) $callback(...$this->arguments);
+                        else $callback();
+                    }
+                    if($this->controllerName && $this->methodName){
+
+                        $this->callMethod($this->controllerName, $this->methodName, $this->arguments);
                     }
                 }
             }
         }
     }
+
+    private function callMethod($className, $methodName, array $args = null){
+        $obj = new $className();
+        if(!empty($args)) $obj->$methodName(...$args);
+        else $obj->$methodName();
+    }
+
+    function __destruct(){
+        $this->run();
+    }
+
 }

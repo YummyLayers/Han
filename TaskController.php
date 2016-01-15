@@ -1,4 +1,5 @@
 <?php
+
 /**
  * IDE: PhpStorm.
  * License: The MIT License (MIT) - Copyright (c) 2016 YummyLayers
@@ -7,20 +8,17 @@
 
 class TaskController {
 
-    function indexAction(){
+    function action(){
         echo "indexAction";
     }
 
     function createAction(){
         echo "createAction";
     }
-    //task/edit/id/qwe/asd
-    function editAction(){
-        echo "editAction";
-    }
 
-    function edit($id){
-        echo "edit ! " . $id;
+    function editAction($id = null){
+
+        echo "editAction " . $id . '<br>';
     }
 
 }

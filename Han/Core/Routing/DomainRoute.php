@@ -15,18 +15,18 @@ use Han\Core\Request;
 
 class DomainRoute {
 
-    private $isEqual = false;
+    private $valid = false;
     private $callback;
     private $middlewareNames;
 
     public function __construct($pattern){
         if ($pattern == Request::getDomain()) {
-            $this->isEqual = true;
+            $this->valid = true;
         }
     }
 
-    public function equal(){
-        return $this->isEqual;
+    public function isValid(){
+        return $this->valid;
     }
 
     public function setCallback($callback){
@@ -48,9 +48,9 @@ class DomainRoute {
         return $this;
     }
 
-    public function run(){
+    private function run(){
 
-        if($this->isEqual){
+        if($this->valid){
 
             $middlewareNext = true;
 
@@ -67,5 +67,10 @@ class DomainRoute {
             }
         }
     }
+
+    function __destruct(){
+        $this->run();
+    }
+
 
 }
