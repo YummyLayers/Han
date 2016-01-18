@@ -5,6 +5,8 @@
  * Date: 08.01.2016
  */
 
+include 'Core/Validation/ValidationHelpers.php';
+
 spl_autoload_register( function( $class ) {
 
     $prefix = 'Han';
