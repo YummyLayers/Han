@@ -19,9 +19,10 @@ class PathRoute {
     private $pathArr;
     private $pattern;
     private $patternArr;
-    private $isController = false;
+    private $isGroup = false;
     private $controllerArgs = array();
-    private $methodNamePosition = false;
+    private $nextSegment = false;
+    private static $segmentCounter = 0;
 
     private $middlewareNames;
     private $arguments;
@@ -45,10 +46,14 @@ class PathRoute {
             $this->patternArr = explode('/', $pattern);
             $argumentsArr = array();
 
+            if(self::$segmentCounter > 0){
+                $this->pathArr = array_slice($this->pathArr, self::$segmentCounter);
+            }
+
+
             if(count($this->pathArr) == count($this->patternArr)){
 
                 foreach($this->pathArr as $key => $pathPart){
-
                     if(substr($this->patternArr[ $key ], 0, 1) == '{' && substr($this->patternArr[ $key ], -1) == '}'){
 
                         if($pathPart){
@@ -65,7 +70,7 @@ class PathRoute {
                         }
                     }
                 }
-                // task/edit/3/wer/2 == task
+
             } elseif(count($this->pathArr) > count($this->patternArr)) {
 
                 foreach($this->patternArr as $key => $patternPart){
@@ -77,8 +82,10 @@ class PathRoute {
                     }
                 }
                 if($pathValid){
-                    $this->methodNamePosition = count($this->patternArr);
-                    $this->isController = true;
+                    $this->nextSegment = count($this->patternArr);
+
+                    $this->isGroup = true;
+
                 }
             }
 
@@ -147,21 +154,48 @@ class PathRoute {
 
             if($middlewareNext){
 
-                if($this->isController){
+                if($this->isGroup){
 
                     if($this->controllerName){
 
-                        if(count($this->pathArr) > count($this->patternArr) + 1){
-                            $this->controllerArgs = array_slice($this->pathArr, $this->methodNamePosition + 1);
+                        if($this->methodName){
+
+                            self::$segmentCounter += $this->nextSegment;
+
+                            $this->callMethod($this->controllerName, $this->methodName, $this->arguments);
+
+                            self::$segmentCounter -= $this->nextSegment;
+
                         } else {
-                            $this->controllerArgs = null;
+
+                            self::$segmentCounter += $this->nextSegment + 1;
+
+                            if(count($this->pathArr) > count($this->patternArr) + 1){
+                                $this->controllerArgs = array_slice($this->pathArr, $this->nextSegment + 1);
+                            } else {
+                                $this->controllerArgs = null;
+                            }
+
+                            $this->callMethod(
+                                $this->controllerName,
+                                Request::getPathArr()[ $this->nextSegment ] . 'Action',
+                                $this->controllerArgs
+                            );
+
+                            self::$segmentCounter -= $this->nextSegment + 1;
                         }
 
-                        $this->callMethod(
-                            $this->controllerName,
-                            Request::getPathArr()[ $this->methodNamePosition ] . 'Action',
-                            $this->controllerArgs
-                        );
+                    }
+
+                    if($this->callback){
+                        self::$segmentCounter += $this->nextSegment;
+
+                        $callback = $this->callback;
+
+                        if($this->arguments) $callback(...$this->arguments);
+                        else $callback();
+
+                        self::$segmentCounter -= $this->nextSegment;
                     }
 
                 } else {
@@ -172,8 +206,8 @@ class PathRoute {
                         if($this->arguments) $callback(...$this->arguments);
                         else $callback();
                     }
-                    if($this->controllerName && $this->methodName){
 
+                    if($this->controllerName && $this->methodName){
                         $this->callMethod($this->controllerName, $this->methodName, $this->arguments);
                     }
                 }

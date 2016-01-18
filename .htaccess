@@ -14,7 +14,8 @@ RewriteRule !\.(css|jpg|gif|png|zip|rar|doc|xls|js|tif|tiff|docx|xlsx|ico|webm)$
 	BrowserMatch ^Mozilla/4.0[678] no-gzip
 	BrowserMatch bMSIE !no-gzip !gzip-only-text/html
 	<ifmodule mod_gzip.c>
-	mod_gzip_on Yes
-	mod_gzip_item_include file \.js$
-	mod_gzip_item_include file \.css$ </ifmodule>
+        mod_gzip_on Yes
+        mod_gzip_item_include file \.js$
+        mod_gzip_item_include file \.css$
+	</ifmodule>
 </IfModule>

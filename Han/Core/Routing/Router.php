@@ -19,4 +19,13 @@ class Router {
 
     }
 
+    public static function group($pattern, $isDomain = false){
+        if($isDomain){
+            return new DomainRoute($pattern);
+        } else {
+            return new PathRoute($pattern);
+        }
+
+    }
+
 }
