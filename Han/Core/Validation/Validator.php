@@ -8,41 +8,38 @@
 namespace Han\Core\Validation;
 
 
-class Validator
-{
+class Validator {
 
     /**
      * @var Validate[]
      */
     private $validators = array();
 
-    function make($name, $value = null)
-    {
+    function make($name, $value = null){
 
         $validate = new Validate($name, $value);
 
-        $this->validators[$name] = $validate;
+        $this->validators[ $name ] = $validate;
 
         return $validate;
     }
 
-    function makeByArray(array $date, array $patterns)
-    {
+    function makeByArray(array $date, array $patterns){
 
-        foreach ($patterns as $name => $pattern) {
+        foreach($patterns as $name => $pattern){
 
             $methodsWithArgs = explode('|', $pattern);
-            $validator = $this->make($name, $date[$name]);
+            $validator = $this->make($name, $date[ $name ]);
 
-            if ($methodsWithArgs) foreach ($methodsWithArgs as $methodWithArgs) {
+            if($methodsWithArgs) foreach($methodsWithArgs as $methodWithArgs){
 
-                if (!empty($methodWithArgs)) {
+                if(!empty($methodWithArgs)){
 
                     $methodAndArgs = explode(':', $methodWithArgs);
                     $methodName = $methodAndArgs[0];
 
-                    if (method_exists($validator, $methodName)) {
-                        if ($methodAndArgs[1]) {
+                    if(method_exists($validator, $methodName)){
+                        if($methodAndArgs[1]){
                             $args = explode(',', $methodAndArgs[1]);
 
                             $validator->$methodName(...$args);
@@ -55,31 +52,29 @@ class Validator
         }
     }
 
-    function hasError()
-    {
+    function hasError(){
 
-        foreach ($this->validators as $v) {
-            if ($v->hasError()) return true;
+        foreach($this->validators as $v){
+            if($v->hasError()) return true;
         }
 
         return false;
     }
 
-    public function getErrorText()
-    {
-        foreach ($this->validators as $v) {
-            if ($v->getErrorText()) return $v->getErrorText();
+    public function getErrorText(){
+        foreach($this->validators as $v){
+            if($v->getErrorText()) return $v->getErrorText();
         }
+
         return null;
     }
 
-    public function getErrorTexts()
-    {
+    public function getErrorTexts(){
 
         $errorTexts = array();
 
-        foreach ($this->validators as $v) {
-            foreach ($v->getErrorTexts() as $errorText) {
+        foreach($this->validators as $v){
+            foreach($v->getErrorTexts() as $errorText){
                 $errorTexts[] = $errorText;
             }
         }
@@ -87,8 +82,7 @@ class Validator
         return $errorTexts;
     }
 
-    public function get($name)
-    {
-        return $this->validators[$name];
+    public function get($name){
+        return $this->validators[ $name ];
     }
 }
