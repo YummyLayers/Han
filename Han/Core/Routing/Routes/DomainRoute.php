@@ -5,50 +5,23 @@
  * Date: 13.01.2016
  */
 
-namespace Han\Core\Routing;
+namespace Han\Core\Routing\Routes;
 
 
-use Closure;
-use Exception;
 use Han\Core\Interfaces\MiddlewareInterface;
 use Han\Core\Request;
+use Han\Core\Routing\Route;
 
-class DomainRoute {
-
-    private $valid = false;
-    private $callback;
-    private $middlewareNames;
+class DomainRoute extends Route {
 
     public function __construct($pattern){
+        $this->pattern = $pattern;
         if ($pattern == Request::getDomain()) {
             $this->valid = true;
         }
     }
 
-    public function isValid(){
-        return $this->valid;
-    }
-
-    public function setCallback($callback){
-        if ($callback instanceof Closure) {
-
-            $this->callback = $callback;
-
-            return $this;
-        } else {
-            throw new Exception("Callback parameter is not a Closure");
-        }
-    }
-
-    public function setMiddleware($middlewareNames){
-        if (!is_array($middlewareNames) && is_string($middlewareNames)) $middlewareNames = array( $middlewareNames );
-
-        $this->middlewareNames = $middlewareNames;
-
-        return $this;
-    }
-
-    private function run(){
+    protected function run(){
 
         if($this->valid){
 
@@ -67,10 +40,5 @@ class DomainRoute {
             }
         }
     }
-
-    function __destruct(){
-        $this->run();
-    }
-
 
 }

@@ -19,7 +19,7 @@ include 'TaskController.php';
 include 'TaskEdit.php';
 
 
-Router::match('han.cibirlan.com', true)->setCallback(function(){
+Router::groupByDomain('han.cibirlan.com')->setCallback(function(){
 
 
     Router::match('/')->setCallback(function(){
@@ -34,10 +34,6 @@ Router::match('han.cibirlan.com', true)->setCallback(function(){
         echo "user " . $id;
     });
 
-    //TODO: explore this anomaly
-    Router::match('etask')->setController("TaskController");
-
-
     Router::group('task')->setController("TaskController");
 
     Router::group('task')->setMethod("TaskEdit", "username");
@@ -46,6 +42,23 @@ Router::match('han.cibirlan.com', true)->setCallback(function(){
         echo "blog/{$name}<br>";
     });
 
+    // etask/asd/blog/{name}
+    Router::group("etask")->setCallback(function(){
+
+        Router::group("asd")->setCallback(function(){
+
+            Router::match('blog/{name}')->setCallback(function($name){
+                echo "etask/asd/blog/{$name}<br>";
+            });
+
+
+        });
+
+        Router::match('eblog/{name}')->setCallback(function($name){
+            echo "etask/asd/eblog/{$name}<br>";
+        });
+
+    });
 
 })->setMiddleware([ "LoggerMiddleware", "AuthMiddleware" ]);
 

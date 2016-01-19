@@ -8,24 +8,22 @@
 namespace Han\Core\Routing;
 
 
+use Han\Core\Routing\Routes\DomainRoute;
+use Han\Core\Routing\Routes\PathRoutes\PathGroupRoute;
+use Han\Core\Routing\Routes\PathRoutes\PathMatchRoute;
+
 class Router {
 
-    public static function match($pattern, $isDomain = false){
-        if ($isDomain) {
-            return new DomainRoute($pattern);
-        } else {
-            return new PathRoute($pattern);
-        }
-
+    public static function match($pattern){
+        return new PathMatchRoute($pattern);
     }
 
-    public static function group($pattern, $isDomain = false){
-        if($isDomain){
-            return new DomainRoute($pattern);
-        } else {
-            return new PathRoute($pattern);
-        }
+    public static function group($pattern){
+        return new PathGroupRoute($pattern);
+    }
 
+    public static function groupByDomain($pattern){
+        return new DomainRoute($pattern);
     }
 
 }
