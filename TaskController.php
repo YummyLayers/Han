@@ -9,12 +9,12 @@ use Han\Core\Routing\Router;
 
 class TaskController {
 
-    function action(){
-        echo "indexAction";
+    function action($id = null){
+        echo "indexAction " . $id;
     }
 
     function createAction(){
-        echo "createAction<br><br><br>";
+        echo "createAction<br><br>";
         // task/create/blog/asd
         Router::match('blog/{name}')->setCallback(function($name){
             echo "task/create/blog/{$name}<br>";

@@ -20,14 +20,22 @@ class Request implements RequestInterface {
      * @return string - URL path
      */
     public static function getPath() {
-        return substr($_SERVER["REDIRECT_URL"], 1, strlen($_SERVER["REDIRECT_URL"])-1);
+        $url = rawurldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+
+        if($url[ strlen($url) - 1 ] == '/') $url = substr($url, 0, strlen($url) - 1);
+
+        return substr($url, 1, strlen($url) - 1);
     }
     /**
      * Getting parts of URL path
      * @return array of parts of URL path
      */
-    public static function getPathArr() {
+    public static function getSegments(){
         return explode('/', self::getPath());
+    }
+
+    public static function getSegment($index){
+        return explode('/', self::getPath())[ $index ];
     }
 
     public static function getDomain(){
